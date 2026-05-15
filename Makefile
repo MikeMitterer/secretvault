@@ -61,6 +61,10 @@ info: ## Workspace-Variablen anzeigen
 .PHONY: hints
 hints: ## Nützliche Links und URLs anzeigen
 	@echo
+	@echo "  $(YELLOW)GitHub$(RESET)"
+	@echo
+	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "Repo" "https://github.com/MikeMitterer/secretvault"
+	@echo
 	@echo "  $(YELLOW)URLs$(RESET)"
 	@echo
 	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "Dev"    "http://localhost:5173"
