@@ -21,3 +21,6 @@ npm-debug.log*
 
 # Coverage
 coverage/
+
+# Interne Kommunikation / nicht für Repo
+Kommunikation-Claude/
