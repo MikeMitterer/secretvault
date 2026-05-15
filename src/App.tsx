@@ -57,6 +57,14 @@ export function Footer({ t }: { t: AppT }): JSX.Element {
       <div style={{display:"flex",gap:20,alignItems:"center"}}>
         <span>© {new Date().getFullYear()} mangolila.at</span>
         <a
+          href="https://github.com/MikeMitterer/secretvault"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{color:C.dim,textDecoration:"none",borderBottom:`1px solid ${C.border}`}}
+        >
+          GitHub
+        </a>
+        <a
           href="https://mangolila.at/impressum"
           target="_blank"
           rel="noopener noreferrer"

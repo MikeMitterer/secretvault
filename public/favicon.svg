@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Hintergrund -->
+  <rect width="32" height="32" rx="7" fill="#0a0a0f"/>
+
+  <!-- Schloss-Bügel -->
+  <path d="M10 15v-4a6 6 0 0 1 12 0v4"
+        fill="none" stroke="#00ff88" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Schloss-Körper -->
+  <rect x="7.5" y="15" width="17" height="12" rx="3" fill="#00ff88"/>
+
+  <!-- Schlüsselloch -->
+  <circle cx="16" cy="20.5" r="2.2" fill="#0a0a0f"/>
+  <rect x="15" y="20.5" width="2" height="3.5" rx="0.5" fill="#0a0a0f"/>
+</svg>
