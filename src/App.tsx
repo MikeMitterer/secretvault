@@ -56,6 +56,7 @@ export function Footer({ t }: { t: AppT }): JSX.Element {
       </div>
       <div style={{display:"flex",gap:20,alignItems:"center"}}>
         <span>© {new Date().getFullYear()} mangolila.at</span>
+        <span style={{color:C.border}}>v{__APP_VERSION__}</span>
         <a
           href="https://github.com/MikeMitterer/secretvault"
           target="_blank"
