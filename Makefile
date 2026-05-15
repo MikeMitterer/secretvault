@@ -27,9 +27,12 @@ THEME_INDENT_GROUP ?= $(shell printf "  ")
 THEME_INDENT_TARGET?= $(shell printf "    ")
 
 # ── Deploy-Konfiguration ──────────────────────────────────────────────────────
-# Überschreiben via: make deploy DEPLOY_HOST=user@server
-DEPLOY_HOST ?= deploy@mangolila.at
-DEPLOY_PATH ?= /var/www/sv.mangolila.at
+# Werte kommen aus .env.deploy (gitignored) — siehe .env.deploy.example
+-include .env.deploy
+export
+
+DEPLOY_HOST ?=
+DEPLOY_PATH ?=
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
 
@@ -117,19 +120,33 @@ test-coverage: ## Tests mit Coverage-Report
 
 ##@ Build & Deploy
 
+.PHONY: server-init
+server-init: ##R Deploy-Script nach /tmp/ auf dem Server kopieren (einmalig)
+	@test -n "$(DEPLOY_HOST)" || (echo "$(RED)Fehler: DEPLOY_HOST nicht gesetzt$(RESET)" && exit 1)
+	scp scripts/fix-deploy-perms-secretvault.sh $(DEPLOY_HOST):/tmp/
+	@echo "$(GREEN)✓ Script nach /tmp/ kopiert$(RESET)"
+	@echo "$(YELLOW)→ Noch manuell auf dem Server ausführen:$(RESET)"
+	@echo "  sudo mv /tmp/fix-deploy-perms-secretvault.sh /usr/local/bin/"
+	@echo "  sudo chmod +x /usr/local/bin/fix-deploy-perms-secretvault.sh"
+	@echo "  sudo visudo -f /etc/sudoers.d/10-deploy-secretvault"
+	@echo "  Inhalt: ubuntu ALL=(ALL) NOPASSWD: /usr/local/bin/fix-deploy-perms-secretvault.sh"
+
 .PHONY: build
 build: ## Production Build erstellen → dist/
 	npm run build
 
 .PHONY: deploy
-deploy: build ##R Build erstellen und per rsync auf Server deployen
+deploy: build ##R Build erstellen und per rsync auf Server deployencat
+	@test -n "$(DEPLOY_HOST)" || (echo "$(RED)Fehler: DEPLOY_HOST nicht gesetzt — .env.deploy prüfen$(RESET)" && exit 1)
+	@test -n "$(DEPLOY_PATH)" || (echo "$(RED)Fehler: DEPLOY_PATH nicht gesetzt — .env.deploy prüfen$(RESET)" && exit 1)
 	@echo "→ Deploying to $(DEPLOY_HOST):$(DEPLOY_PATH) ..."
-	rsync -avz --delete dist/ $(DEPLOY_HOST):$(DEPLOY_PATH)/
+	rsync -avzO --no-perms --delete dist/ $(DEPLOY_HOST):$(DEPLOY_PATH)/
+	ssh $(DEPLOY_HOST) "sudo /usr/local/bin/fix-deploy-perms-secretvault.sh"
 	@echo "✓ Deploy abgeschlossen → https://sv.mangolila.at"
 
 .PHONY: deploy-dry
 deploy-dry: build ## Deploy simulieren (kein Upload, --dry-run)
-	rsync -avz --dry-run --delete dist/ $(DEPLOY_HOST):$(DEPLOY_PATH)/
+	rsync -avzO --no-perms --dry-run --delete dist/ $(DEPLOY_HOST):$(DEPLOY_PATH)/
 
 # ─── Wartung ─────────────────────────────────────────────────────────────────
 

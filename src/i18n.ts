@@ -225,8 +225,18 @@ export const TRANSLATIONS: Record<Lang, AppT> = {
       },
       {
         num:   "03",
-        title: "Sicher aufbewahren",
-        text:  "Teil 1 → Website oder Server. Teil 2 → bei dir als Text oder QR-Code. Passwort → auswendig.",
+        title: "Teile verteilen",
+        text:  "Teil 1 → Website oder Server. Teil 2 → als Text sichern oder QR-Code speichern. Passwort → auswendig merken.",
+      },
+      {
+        num:   "04",
+        title: "QR-Code scannen",
+        text:  "Später: QR-Code mit dem Smartphone scannen oder einer QR-App öffnen. Den angezeigten Text in die Zwischenablage kopieren.",
+      },
+      {
+        num:   "05",
+        title: "Secret wiederherstellen",
+        text:  "In der App: Teil 1 einfügen, Teil 2 aus der Zwischenablage pasten, Passwort eingeben — der geheime Text wird vollständig wiederhergestellt.",
       },
     ],
 
@@ -368,8 +378,18 @@ export const TRANSLATIONS: Record<Lang, AppT> = {
       },
       {
         num:   "03",
-        title: "Store Safely",
-        text:  "Part 1 → website or server. Part 2 → with you as text or QR code. Password → memorized.",
+        title: "Distribute the Parts",
+        text:  "Part 1 → website or server. Part 2 → save as text or store as QR code. Password → memorize it.",
+      },
+      {
+        num:   "04",
+        title: "Scan the QR Code",
+        text:  "Later: scan the QR code with your phone or a QR app. Copy the displayed text to your clipboard.",
+      },
+      {
+        num:   "05",
+        title: "Restore Your Secret",
+        text:  "In the app: paste Part 1, paste Part 2 from clipboard, enter your password — the secret text is fully reconstructed.",
       },
     ],
 

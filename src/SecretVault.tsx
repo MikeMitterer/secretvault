@@ -301,14 +301,49 @@ interface OutputRowProps {
   onShowQR:  (data: string) => void;
 }
 
+/** Clipboard-Icon (zwei überlagerte Rechtecke). */
+function IconCopy(): JSX.Element {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2"/>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+    </svg>
+  );
+}
+
+/** QR-Code-Icon (drei Finder-Pattern-Quadrate + Datenpunkte). */
+function IconQR(): JSX.Element {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="8" height="8" rx="1"/>
+      <rect x="14" y="2" width="8" height="8" rx="1"/>
+      <rect x="2" y="14" width="8" height="8" rx="1"/>
+      <rect x="4.5" y="4.5" width="3" height="3" fill="currentColor" stroke="none"/>
+      <rect x="16.5" y="4.5" width="3" height="3" fill="currentColor" stroke="none"/>
+      <rect x="4.5" y="16.5" width="3" height="3" fill="currentColor" stroke="none"/>
+      <rect x="14" y="14" width="3" height="3" fill="currentColor" stroke="none"/>
+      <rect x="19" y="14" width="3" height="3" fill="currentColor" stroke="none"/>
+      <rect x="14" y="19" width="3" height="3" fill="currentColor" stroke="none"/>
+      <rect x="19" y="19" width="3" height="3" fill="currentColor" stroke="none"/>
+    </svg>
+  );
+}
+
 /** Ausgabezeile mit Base64-Text, Kopier-Button und QR-Button. */
 function OutputRow({ text, onCopy, onShowQR }: OutputRowProps): JSX.Element {
+  const btnStyle = {
+    width:36,height:36,
+    display:"flex" as const,alignItems:"center",justifyContent:"center",
+    borderRadius:6,border:`1px solid ${C.border}`,
+    background:C.surface2,color:C.dim,cursor:"pointer" as const,
+    flexShrink:0,
+  };
   return (
     <div style={{display:"flex",gap:6,alignItems:"stretch",marginBottom:7}}>
       <div style={{flex:1,background:C.surface2,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 10px",fontFamily:"monospace",fontSize:11,wordBreak:"break-all",color:C.accent,lineHeight:1.6,minHeight:40}}>{text}</div>
       <div style={{display:"flex",flexDirection:"column",gap:4}}>
-        <button onClick={() => onCopy(text)} style={{padding:"6px 9px",borderRadius:6,border:`1px solid ${C.border}`,background:C.surface2,color:C.dim,cursor:"pointer",fontSize:13}}>⎘</button>
-        <button onClick={() => onShowQR(text)} style={{padding:"6px 9px",borderRadius:6,border:`1px solid ${C.border}`,background:C.surface2,color:C.dim,cursor:"pointer",fontSize:13}}>▦</button>
+        <button onClick={() => onCopy(text)} title="Kopieren" style={btnStyle}><IconCopy/></button>
+        <button onClick={() => onShowQR(text)} title="QR-Code" style={btnStyle}><IconQR/></button>
       </div>
     </div>
   );
