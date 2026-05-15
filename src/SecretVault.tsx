@@ -714,6 +714,12 @@ export default function SecretVault({ lang, onChangeLang }: SecretVaultProps = {
             )}
           </>
         )}
+        {/* Footer */}
+        <div style={{textAlign:"center",padding:"24px 0 8px",fontSize:10,color:C.dim,fontFamily:"monospace",letterSpacing:1}}>
+          <a href="https://www.mangolila.at" target="_blank" rel="noopener noreferrer" style={{color:C.dim,textDecoration:"none",borderBottom:`1px solid ${C.border}`}}>
+            mangolila.at
+          </a>
+        </div>
       </div>
 
       {isHelpVisible && <HelpModal onClose={() => setIsHelpVisible(false)} t={t}/>}
