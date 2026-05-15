@@ -65,7 +65,7 @@ export function Footer({ t }: { t: AppT }): JSX.Element {
           GitHub
         </a>
         <a
-          href="https://mangolila.at/impressum"
+          href="https://www.mangolila.at/impressum"
           target="_blank"
           rel="noopener noreferrer"
           style={{color:C.dim,textDecoration:"none",borderBottom:`1px solid ${C.border}`}}
