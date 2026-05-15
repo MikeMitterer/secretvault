@@ -5,41 +5,75 @@ SHELL := /bin/bash
 WORKSPACE    := $(realpath $(shell pwd))
 PROJECT_NAME := $(notdir $(WORKSPACE))
 
-# ── Deploy-Konfiguration ─────────────────────────────────────────────────────
-# Überschreiben via: make deploy DEPLOY_HOST=user@server DEPLOY_PATH=/var/www/...
+-include ${DEV_MAKE}/colours.mk
+
+# Fallbacks wenn DEV_MAKE nicht verfügbar (z.B. auf dem Server)
+YELLOW ?= $(shell printf "\033[38;5;3m")
+GREEN  ?= $(shell printf "\033[38;5;2m")
+BLUE   ?= $(shell printf "\033[38;5;6m")
+ORANGE ?= $(shell printf "\033[38;5;214m")
+RED    ?= $(shell printf "\033[38;5;1m")
+WHITE  ?= $(shell printf "\033[38;5;7m")
+RESET  ?= $(shell printf "\033[0m")
+NC     ?= $(shell printf "\033[0m")
+
+# THEME-Variablen — werden von colours.mk gesetzt, hier als Fallback
+THEME_COLOR_GROUP  ?= $(YELLOW)
+THEME_COLOR_TARGET ?= $(BLUE)
+THEME_COLOR_DESC   ?= $(GREEN)
+THEME_COLOR_SERVER ?= $(ORANGE)
+THEME_COLOR_DANGER ?= $(RED)
+THEME_INDENT_GROUP ?= $(shell printf "  ")
+THEME_INDENT_TARGET?= $(shell printf "    ")
+
+# ── Deploy-Konfiguration ──────────────────────────────────────────────────────
+# Überschreiben via: make deploy DEPLOY_HOST=user@server
 DEPLOY_HOST ?= deploy@mangolila.at
 DEPLOY_PATH ?= /var/www/sv.mangolila.at
 
-# ── Hilfe ────────────────────────────────────────────────────────────────────
+# ─── Hilfe ───────────────────────────────────────────────────────────────────
 
 .PHONY: help
 help: ## Alle verfügbaren Befehle anzeigen
 	@echo
-	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "Please use \`make <$(THEME_COLOR_GROUP)target$(RESET)>' where <target> is one of"
 	@echo
-	@echo "Project: $(PROJECT_NAME)"
+	@echo "Project: $(THEME_COLOR_GROUP)$(PROJECT_NAME)$(RESET)"
 	@echo
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "    %-18s %s\n", $$1, $$2}'
+	@grep -hE '^(##@|[a-zA-Z0-9_-]+:.*?##[R]? )' $(MAKEFILE_LIST) | \
+	  awk 'BEGIN {FS = ":.*##[R]? "}; \
+	    /^##@/ { printf "\n$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)%s$(RESET)\n", substr($$0, 4); next }; \
+	    /##R /  { printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_SERVER)%-20s $(THEME_COLOR_DESC)%s$(RESET)\n", $$1, $$2; next }; \
+	    /## /   { printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-20s $(THEME_COLOR_DESC)%s$(RESET)\n", $$1, $$2 }'
 	@echo
-	@$(MAKE) hints
+	@echo "  $(THEME_COLOR_TARGET)■$(RESET) lokal   $(THEME_COLOR_SERVER)■$(RESET) SSH → Server, schreibend"
+	@echo
+
+.PHONY: info
+info: ## Workspace-Variablen anzeigen
+	@echo
+	@echo "    $(YELLOW)PROJECT_NAME$(RESET) = $(BLUE)$(PROJECT_NAME)$(RESET)"
+	@echo "    $(YELLOW)WORKSPACE$(RESET)    = $(BLUE)$(WORKSPACE)$(RESET)"
+	@echo "    $(YELLOW)DEPLOY_HOST$(RESET)  = $(BLUE)$(DEPLOY_HOST)$(RESET)"
+	@echo "    $(YELLOW)DEPLOY_PATH$(RESET)  = $(BLUE)$(DEPLOY_PATH)$(RESET)"
+	@echo
 
 .PHONY: hints
-hints: ## Nützliche Hinweise anzeigen
-	@echo "Hints:"
+hints: ## Nützliche Links und URLs anzeigen
 	@echo
-	@echo "    Deploy-Config (Makefile-Variablen):"
-	@echo "        DEPLOY_HOST = $(DEPLOY_HOST)"
-	@echo "        DEPLOY_PATH = $(DEPLOY_PATH)"
+	@echo "  $(YELLOW)URLs$(RESET)"
 	@echo
-	@echo "    Überschreiben: make deploy DEPLOY_HOST=user@server"
+	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "Dev"    "http://localhost:5173"
+	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "Live"   "https://sv.mangolila.at"
 	@echo
-	@echo "    URLs (nach make dev):"
-	@echo "        Dev   - http://localhost:5173"
-	@echo "        Live  - https://sv.mangolila.at"
+	@echo "  $(YELLOW)Deploy$(RESET)"
+	@echo
+	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "Host"   "$(DEPLOY_HOST)"
+	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "Path"   "$(DEPLOY_PATH)"
+	@printf "    $(BLUE)%-12s$(RESET) $(WHITE)%s$(RESET)\n" "" "Überschreiben: make deploy DEPLOY_HOST=user@server"
 	@echo
 
-# ── Setup ────────────────────────────────────────────────────────────────────
+# ─── Setup ───────────────────────────────────────────────────────────────────
 
 ##@ Setup
 
@@ -47,7 +81,7 @@ hints: ## Nützliche Hinweise anzeigen
 install: ## Node-Abhängigkeiten installieren
 	npm install
 
-# ── Entwicklung ──────────────────────────────────────────────────────────────
+# ─── Entwicklung ─────────────────────────────────────────────────────────────
 
 ##@ Entwicklung
 
@@ -59,7 +93,7 @@ dev: ## Dev-Server starten → http://localhost:5173
 preview: ## Production Build lokal vorschauen
 	npm run preview
 
-# ── Tests ─────────────────────────────────────────────────────────────────────
+# ─── Tests ───────────────────────────────────────────────────────────────────
 
 ##@ Tests
 
@@ -75,7 +109,7 @@ test-watch: ## Tests im Watch-Modus (interaktiv)
 test-coverage: ## Tests mit Coverage-Report
 	npm run test:coverage
 
-# ── Build & Deploy ────────────────────────────────────────────────────────────
+# ─── Build & Deploy ──────────────────────────────────────────────────────────
 
 ##@ Build & Deploy
 
@@ -84,16 +118,16 @@ build: ## Production Build erstellen → dist/
 	npm run build
 
 .PHONY: deploy
-deploy: build ## Build erstellen und per rsync auf Server deployen
+deploy: build ##R Build erstellen und per rsync auf Server deployen
 	@echo "→ Deploying to $(DEPLOY_HOST):$(DEPLOY_PATH) ..."
 	rsync -avz --delete dist/ $(DEPLOY_HOST):$(DEPLOY_PATH)/
 	@echo "✓ Deploy abgeschlossen → https://sv.mangolila.at"
 
 .PHONY: deploy-dry
-deploy-dry: build ## Deploy simulieren (kein Upload)
+deploy-dry: build ## Deploy simulieren (kein Upload, --dry-run)
 	rsync -avz --dry-run --delete dist/ $(DEPLOY_HOST):$(DEPLOY_PATH)/
 
-# ── Wartung ───────────────────────────────────────────────────────────────────
+# ─── Wartung ─────────────────────────────────────────────────────────────────
 
 ##@ Wartung
 
