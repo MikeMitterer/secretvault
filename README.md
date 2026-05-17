@@ -1,76 +1,76 @@
 # SecretVault
 
-Browser-basiertes Werkzeug zum Verschlüsseln und Aufteilen von Secret Keys.  
-Läuft vollständig lokal — kein Server, keine Cloud, keine Datenübertragung.
+A browser-based tool for encrypting and splitting secret keys.  
+Runs entirely locally — no server, no cloud, no data transmission.
 
 **Live:** [sv.mangolila.at](https://sv.mangolila.at)
 
 ---
 
-## Idee
+## Concept
 
-Ein Secret Key (API-Token, Passwort, Seed Phrase, …) wird mit einem Passwort verschlüsselt und anschließend in zwei Hälften aufgeteilt:
+A secret key (API token, password, seed phrase, …) is encrypted with a password and then split into two halves:
 
-- **Teil 1** → auf einer Website, im Repo oder Server ablegen
-- **Teil 2** → selbst behalten (Text oder QR-Code)
-- **Passwort** → auswendig merken
+- **Part 1** → store on a website, in a repo, or on a server
+- **Part 2** → keep yourself (text or QR code)
+- **Password** → memorize it
 
-Alle drei Teile zusammen sind nötig, um den Original-Key wiederherzustellen. Keine der drei Komponenten allein ist wertlos.
+All three components together are required to recover the original key. None of the three parts alone is sufficient.
 
-## Krypto-Stack
+## Crypto Stack
 
-| Komponente | Detail |
+| Component | Detail |
 |---|---|
-| Verschlüsselung | AES-256-GCM (inkl. Integritätsprüfung) |
-| Schlüsselableitung | PBKDF2-SHA256, 250.000 Iterationen, 16 Byte Salt |
-| IV/Nonce | 12 Byte, pro Verschlüsselung zufällig neu generiert |
-| Secret Splitting | Interleaving — gerade Indizes → Teil 1, ungerade → Teil 2 |
-| Implementierung | Web Crypto API (browser-nativ) |
+| Encryption | AES-256-GCM (including integrity check) |
+| Key derivation | PBKDF2-SHA256, 250,000 iterations, 16-byte salt |
+| IV/Nonce | 12 bytes, randomly generated per encryption |
+| Secret splitting | Interleaving — even indices → Part 1, odd → Part 2 |
+| Implementation | Web Crypto API (browser-native) |
 
-Binärformat des Encrypted Blob: `[Salt 16B][IV 12B][AES-GCM Ciphertext + 16B Tag]` → Base64
+Encrypted blob binary format: `[Salt 16B][IV 12B][AES-GCM Ciphertext + 16B Tag]` → Base64
 
-## Entwicklung
+## Development
 
 ```bash
-make install       # Abhängigkeiten installieren
-make dev           # Dev-Server → http://localhost:5173
-make test          # Tests einmalig ausführen
-make test-watch    # Tests im Watch-Modus
-make build         # Production Build → dist/
-make clean         # node_modules + dist/ löschen
+make install       # Install dependencies
+make dev           # Dev server → http://localhost:5173
+make test          # Run tests once
+make test-watch    # Run tests in watch mode
+make build         # Production build → dist/
+make clean         # Delete node_modules + dist/
 ```
 
 ## Deploy
 
 ```bash
-make deploy                              # Build + rsync mit Default-Konfiguration
-make deploy DEPLOY_HOST=user@server      # Anderen Host angeben
+make deploy                              # Build + rsync with default config
+make deploy DEPLOY_HOST=user@server      # Specify a different host
 ```
 
-Standardwerte in der `Makefile`:
+Defaults in `Makefile`:
 ```
 DEPLOY_HOST = deploy@mangolila.at
 DEPLOY_PATH = /var/www/sv.mangolila.at
 ```
 
-Nginx-Konfiguration: [`nginx/sv.mangolila.at.conf`](nginx/sv.mangolila.at.conf)
+Nginx config: [`nginx/sv.mangolila.at.conf`](nginx/sv.mangolila.at.conf)
 
-## Projektstruktur
+## Project Structure
 
 ```
 src/
-  App.tsx              ← Root-Komponente, Routing, Language-State
-  LandingPage.tsx      ← Landingpage (Hero, Use Cases, Sicherheit, CTA)
-  SecretVault.tsx      ← Verschlüsselungs-App
-  i18n.ts              ← Übersetzungen DE / EN
-  theme.ts             ← Farb-Konstanten
-  constants.ts         ← Geteilte Konstanten (MAX_LEN)
-  main.tsx             ← React-Einstiegspunkt
+  App.tsx              ← Root component, routing, language state
+  LandingPage.tsx      ← Landing page (hero, use cases, security, CTA)
+  SecretVault.tsx      ← Encryption app
+  i18n.ts              ← Translations DE / EN
+  theme.ts             ← Color constants
+  constants.ts         ← Shared constants (MAX_LEN)
+  main.tsx             ← React entry point
   __tests__/
-    setup.ts           ← Vitest/jsdom Mocks
+    setup.ts           ← Vitest/jsdom mocks
     SecretVault.test.tsx
 nginx/
-  sv.mangolila.at.conf ← Nginx-Konfiguration für die Subdomain
+  sv.mangolila.at.conf ← Nginx config for the subdomain
 index.html
 package.json
 vite.config.ts
@@ -83,8 +83,8 @@ Makefile
 |---|---|
 | Framework | React 18 |
 | Build | Vite |
-| Sprachen | TypeScript |
+| Language | TypeScript |
 | Tests | Vitest + jsdom + Testing Library |
-| i18n | Eigene Lösung (kein externes Paket) |
-| Krypto | Web Crypto API (browser-nativ, kein npm-Paket) |
-| QR-Code | [qrcode](https://www.npmjs.com/package/qrcode) |
+| i18n | Custom solution (no external package) |
+| Crypto | Web Crypto API (browser-native, no npm package) |
+| QR Code | [qrcode](https://www.npmjs.com/package/qrcode) |
