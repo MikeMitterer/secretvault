@@ -8,7 +8,10 @@
       "Bash(node -e \"require\\('./node_modules/react-router-dom/package.json'\\); console.log\\('ok'\\)\")",
       "Bash(git -C /Volumes/DevLocal/DevWeb/Production/SecretVault log --oneline -3)",
       "Bash(git:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(ls /Volumes/DevLocal/DevWeb/Production/SecretVault/src/*.d.ts)",
+      "Bash(ls /Volumes/DevLocal/DevWeb/Production/SecretVault/*.pdf)",
+      "WebFetch(domain:www.mangolila.at)"
     ]
   }
 }
